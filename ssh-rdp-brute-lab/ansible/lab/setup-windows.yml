@@ -1,0 +1,28 @@
+---
+- name: Set up Windows Container
+  hosts: localhost
+  connection: local
+  vars:
+    docker_socket: "unix://{{ lookup('env', 'HOME') }}/.colima/default/docker.sock"
+
+  tasks:
+    - name: Create pentest network if it doesn't exist
+      community.docker.docker_network:
+        name: pentest-net
+        state: present
+        docker_host: "{{ docker_socket }}"
+
+    - name: Start Windows Server Core container
+      community.docker.docker_container:
+        name: windows_target
+        image: docker pull mcr.microsoft.com/windows/servercore:ltsc2019-amd64
+        state: started
+        recreate: yes
+        platform: windows/amd64
+        published_ports:
+          - "3389:3389"
+        networks:
+          - name: pentest-net
+        docker_host: "{{ docker_socket }}"
+        env:
+          ACCEPT_EULA: "Y"

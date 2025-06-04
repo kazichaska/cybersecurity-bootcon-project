@@ -1,0 +1,34 @@
+---
+- name: Set up Metasploitable2 Container
+  hosts: localhost
+  connection: local
+
+  vars:
+    docker_socket: "unix://{{ lookup('env', 'HOME') }}/.colima/default/docker.sock"
+  
+  tasks:
+    - name: Start Metasploitable2 container
+      community.docker.docker_container:
+        name: metasploit_target
+        image: tleemcjr/metasploitable2
+        state: started
+        recreate: yes
+        published_ports:
+          - "8180:80"
+          - "2223:22"
+        networks:
+          - name: pentest-net
+        platform: linux/amd64
+        docker_host: "{{ docker_socket }}"
+
+    # Optional: Check service status (debugging)
+    - name: Check running services (optional)
+      community.docker.docker_container_exec:
+        container: metasploit_target
+        command: bash -c "ps aux"
+        docker_host: "{{ docker_socket }}"
+      register: service_status
+
+    - name: Show services running inside Metasploitable2
+      debug:
+        var: service_status.stdout_lines

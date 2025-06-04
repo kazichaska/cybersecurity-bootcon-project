@@ -1,0 +1,19 @@
+---
+- name: Deploy Juice Shop Container
+  hosts: localhost
+  connection: local
+  vars:
+    docker_socket: "unix://{{ lookup('env', 'HOME') }}/.colima/default/docker.sock"
+  tasks:
+    - name: Start Juice Shop container
+      community.docker.docker_container:
+        name: juice_shop
+        image: bkimminich/juice-shop
+        state: started
+        recreate: yes
+        published_ports:
+          - "3000:3000" # Map host port 3000 to container port 3000
+        networks:
+          - name: pentest-net # Or whatever network your Kali container is on
+        networks_cli_compatible: yes
+        docker_host: "{{ docker_socket }}"

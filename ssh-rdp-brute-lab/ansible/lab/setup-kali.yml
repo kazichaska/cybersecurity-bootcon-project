@@ -1,0 +1,63 @@
+---
+- name: Set up Kali Attacker Container
+  hosts: localhost
+  connection: local
+  gather_facts: no
+  
+  vars:
+    docker_socket: "unix://{{ lookup('env', 'HOME') }}/.colima/default/docker.sock"
+
+  tasks:
+    - name: Create pentest network if it doesn't exist
+      community.docker.docker_network:
+        name: pentest-net
+        state: present
+        docker_host: "{{ docker_socket }}"
+    
+    - name: Pull Kali Linux image
+      community.docker.docker_image:
+        name: kalilinux/kali-rolling
+        source: pull
+        docker_host: "{{ docker_socket }}"
+
+    - name: Start Kali container
+      community.docker.docker_container:
+        name: kali_attacker
+        image: kalilinux/kali-rolling
+        state: started
+        recreate: yes
+        command: /bin/bash
+        tty: yes
+        interactive: yes
+        networks:
+          - name: pentest-net
+        volumes:
+          - "{{ playbook_dir }}/../scripts:/opt/lab"
+        docker_host: "{{ docker_socket }}"
+
+    - name: Install tools in Kali
+      community.docker.docker_container_exec:
+        container: kali_attacker
+        command: |
+          bash -c "apt update && \
+                  apt install -y \
+                  hydra \
+                  nmap \
+                  python3-pip \
+                  metasploit-framework \
+                  wordlists \
+                  iputils-ping \
+                  netcat-traditional && \
+                  gunzip -f /usr/share/wordlists/rockyou.txt.gz && \
+                  sed -i '1i toor' /usr/share/wordlists/rockyou.txt"
+      register: kali_install_output
+    
+    - name: Install Python requests module using apt
+      community.docker.docker_container_exec:
+        container: kali_attacker
+        command: apt install -y python3-requests
+      register: pip_install_output
+
+    - name: Print Kali install output
+      debug:
+        var: kali_install_output.stdout_lines

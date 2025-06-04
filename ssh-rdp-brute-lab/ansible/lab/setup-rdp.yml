@@ -1,0 +1,38 @@
+---
+- name: Set up RDP Target Container
+  hosts: localhost
+  connection: local
+  vars:
+    docker_socket: "unix://{{ lookup('env', 'HOME') }}/.colima/default/docker.sock"
+
+  tasks:
+    - name: Create pentest network if it doesn't exist
+      community.docker.docker_network:
+        name: pentest-net
+        state: present
+        docker_host: "{{ docker_socket }}"
+
+    - name: Start Ubuntu RDP target container
+      community.docker.docker_container:
+        name: rdp_target
+        image: ubuntu:20.04
+        state: started
+        recreate: yes
+        published_ports:
+          - "3389:3389"
+        networks:
+          - name: pentest-net
+        docker_host: "{{ docker_socket }}"
+        command: tail -f /dev/null  # Keep container running
+
+    - name: Install XRDP and configure system
+      community.docker.docker_container_exec:
+        container: rdp_target
+        command: |
+          bash -c "apt-get update && \
+                   DEBIAN_FRONTEND=noninteractive apt-get install -y xrdp xfce4 && \
+                   echo 'xfce4-session' > /root/.xsession && \
+                   service xrdp start && \
+                   useradd -m admin && \
+                   echo 'admin:password123' | chpasswd && \
+                   usermod -aG sudo admin"

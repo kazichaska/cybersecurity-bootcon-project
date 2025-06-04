@@ -1,0 +1,55 @@
+---
+- name: Clean up SSH Brute Force Lab Docker Containers and Images (Robust)
+  hosts: localhost
+  connection: local
+  gather_facts: false
+
+  vars:
+    docker_socket: "unix://{{ lookup('env', 'HOME') }}/.colima/default/docker.sock"
+
+
+  tasks:
+    - name: Ensure Kali container is stopped and removed
+      community.docker.docker_container:
+        name: kali_attacker
+        state: absent
+        docker_host: "{{ docker_socket }}"
+
+    - name: Ensure SSH target container is stopped and removed
+      community.docker.docker_container:
+        name: target_ssh
+        state: absent
+        docker_host: "{{ docker_socket }}"
+
+    - name: Ensure RDP target container is stopped and removed
+      community.docker.docker_container:
+        name: rdp_target
+        state: absent
+        docker_host: "{{ docker_socket }}"
+
+    - name: Ensure Metasploit container is stopped and removed
+      community.docker.docker_container:
+        name: metasploit_target
+        state: absent
+        docker_host: "{{ docker_socket }}"
+
+    - name: Remove Kali image (force if necessary)
+      community.docker.docker_image:
+        name: kalilinux/kali-rolling
+        state: absent
+        force_absent: true
+        docker_host: "{{ docker_socket }}"
+
+    - name: Remove Ubuntu image (force if necessary)
+      community.docker.docker_image:
+        name: ubuntu
+        state: absent
+        force_absent: true
+        docker_host: "{{ docker_socket }}"
+
+    - name: Remove Metasploitable2 image (force if necessary)
+      community.docker.docker_image:
+        name: tleemcjr/metasploitable2
+        state: absent
+        force_absent: true
+        docker_host: "{{ docker_socket }}"

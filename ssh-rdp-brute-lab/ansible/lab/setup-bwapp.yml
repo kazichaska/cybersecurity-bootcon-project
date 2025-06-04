@@ -1,0 +1,86 @@
+---
+- name: Set up bWAPP vulnerable app with MySQL
+  hosts: localhost
+  connection: local
+  gather_facts: no
+
+  vars:
+    docker_socket: "unix://{{ lookup('env', 'HOME') }}/.colima/default/docker.sock"
+
+  tasks:
+    - name: Create pentest network
+      community.docker.docker_network:
+        name: pentest-net
+        state: present
+        docker_host: "{{ docker_socket }}"
+
+    - name: Manually pull MySQL:5.7 image for x86_64 on ARM (M1/M2)
+      ansible.builtin.command: >
+        docker --host={{ docker_socket }} pull --platform linux/amd64 mysql:5.7
+
+    - name: Pull bWAPP image
+      community.docker.docker_image:
+        name: raesene/bwapp
+        source: pull
+        docker_host: "{{ docker_socket }}"
+
+    - name: Start MySQL container for bWAPP
+      community.docker.docker_container:
+        name: bwapp_mysql
+        image: mysql:5.7
+        state: started
+        restart_policy: always
+        env:
+          MYSQL_ROOT_PASSWORD: bwapp
+          MYSQL_DATABASE: bwapp
+          MYSQL_USER: bwapp
+          MYSQL_PASSWORD: bwapp
+        networks:
+          - name: pentest-net
+        docker_host: "{{ docker_socket }}"
+
+    - name: Start bWAPP container
+      community.docker.docker_container:
+        name: bwapp_web
+        image: raesene/bwapp
+        state: started
+        restart_policy: always
+        published_ports:
+          - "8080:80"
+        env:
+          MYSQL_ROOT_PASSWORD: bwapp
+          MYSQL_DATABASE: bwapp
+          MYSQL_USER: bwapp
+          MYSQL_PASSWORD: bwapp
+        networks:
+          - name: pentest-net
+        links:
+          - bwapp_mysql
+        docker_host: "{{ docker_socket }}"
+    
+    - name: Copy updated settings.php into bWAPP container
+      ansible.builtin.command: >
+        docker --host={{ docker_socket }} cp ../../files/settings.php bwapp_web:/var/www/html/admin/settings.php
+
+    - name: Copy create.sql into bwapp_web container
+      ansible.builtin.command: >
+        docker --host={{ docker_socket }} cp ../../files/create.sql bwapp_web:/tmp/create.sql
+
+    - name: Check if bwapp database exists
+      community.docker.docker_container_exec:
+        container: bwapp_mysql
+        command: mysql -u root -pbwapp -e "SHOW DATABASES LIKE 'bwapp';"
+        docker_host: "{{ docker_socket }}"
+      register: bwapp_db_check
+      changed_when: false
+      failed_when: false
+
+    - name: Initialize bWAPP MySQL database
+      community.docker.docker_container_exec:
+        container: bwapp_web
+        command: >
+          bash -c "mysql -h bwapp_mysql -u bwapp -pbwapp bwapp < /tmp/create.sql"
+        docker_host: "{{ docker_socket }}"
+      when: "'bwapp' not in bwapp_db_check.stdout"
+
+

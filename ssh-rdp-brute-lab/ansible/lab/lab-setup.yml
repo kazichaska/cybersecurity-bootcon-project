@@ -1,0 +1,46 @@
+---
+- name: Import Network Setup
+  import_playbook: setup-network.yml
+
+- name: Import Kali Attacker Setup
+  import_playbook: setup-kali.yml
+
+- name: Import SSH Target Setup
+  import_playbook: setup-target.yml
+
+- name: Import RDP Target Setup
+  import_playbook: setup-rdp.yml
+
+- name: Import bwapp Target Setup
+  import_playbook: setup-bwapp.yml
+
+# - name: Import Juice Shop Target Setup
+#   import_playbook: setup-owasp.yml
+
+# - name: Import Metasploit Target Setup
+#   import_playbook: setup-metasploit.yml
+
+- name: Verify Lab Environment
+  hosts: localhost
+  connection: local
+  vars:
+    docker_socket: "unix://{{ lookup('env', 'HOME') }}/.colima/default/docker.sock"
+  
+  tasks:
+    - name: Check container status
+      community.docker.docker_container_info:
+        name: "{{ item }}"
+        docker_host: "{{ docker_socket }}"
+      loop:
+        - kali_attacker
+        - target_ssh
+        - rdp_target
+        #- juice_shop
+        - bwapp_web
+        #- metasploit_target
+      register: container_status
+
+    - name: Display status
+      debug:
+        msg: "Container {{ item.container.Name }} is {{ item.container.State.Status }}"
+      loop: "{{ container_status.results }}"

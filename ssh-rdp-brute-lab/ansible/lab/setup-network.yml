@@ -1,0 +1,16 @@
+---
+- name: Create Docker network for pentest lab
+  hosts: localhost
+  connection: local
+  vars:
+    docker_socket: "unix://{{ lookup('env', 'HOME') }}/.colima/default/docker.sock"
+
+  tasks:
+    - name: Create pentest network
+      community.docker.docker_network:
+        name: pentest-net
+        state: present
+        docker_host: "{{ docker_socket }}"
+        driver: bridge
+        ipam_config:
+          - subnet: 172.18.0.0/16

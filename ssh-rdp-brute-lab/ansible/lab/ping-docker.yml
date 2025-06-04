@@ -1,0 +1,6 @@
+- name: Test Docker connection
+  hosts: localhost
+  connection: local
+  tasks:
+    - name: Ping Docker server
+      community.docker.docker_host_info:
