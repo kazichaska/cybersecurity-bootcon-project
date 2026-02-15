@@ -1,138 +1,200 @@
 
-# 🚀 BootCon Cybersecurity Lab: SSH Brute-Force & Metasploit Automation
+# BootCon Cybersecurity Lab (2026 Branch)
 
-This project provides a fast-deployable, containerized cybersecurity lab to simulate real-world attacks and defenses. It uses **Ansible** for automation, **Docker + Colima** for environment management, and includes tools like **Hydra**, **Metasploit**, and **Nmap** for offensive testing—all within minutes.
+Hands-on, containerized cybersecurity lab for learning and practicing offensive + defensive workflows in a controlled environment.
 
-Ideal for:
+## Why this branch
 
-* 🎓 Cybersecurity students
-* 🧑‍💻 Bootcamp labs
-* 🧪 CTF prep & demonstrations
-* 🛡️ Red teaming practice
+- Modernized Python automation scripts with safer subprocess handling and CLI arguments
+- Improved lab verification workflow with explicit health checks
+- CI quality gates (lint, syntax, and Ansible checks)
+- Cleaner onboarding path for students, instructors, and self-learners
 
----
+## Core capabilities
 
-## 🎯 Objectives
+- SSH brute-force practice using Hydra + Nmap
+- RDP brute-force practice using Hydra + service checks
+- bWAPP vulnerable web target deployment
+- End-to-end lab orchestration and cleanup with Ansible
 
-* 🔐 **Brute-force SSH logins** using `Hydra` with real credential wordlists
-* 💥 **Exploit known vulnerabilities** (e.g., `vsftpd`, `phpMyAdmin`) using `Metasploit`
-* ⚙️ **Automate full lab setup/teardown** using `Ansible`
-* 🖥️ **Showcase demos** with clear steps for scanning, exploiting, and hardening
+## Quick start
 
----
+1. Start Colima and select its Docker context:
 
-## 🛠️ Tools & Technologies
+	```bash
+	colima start
+	docker context use colima
+	```
 
-* Python 3
-* Docker + Colima (for Mac users)
-* Ansible
-* Kali Linux (attacker)
-* Ubuntu w/ SSH (target)
-* Metasploitable2
-* Hydra, Nmap, Metasploit Framework
+2. Install Python dependencies:
 
----
+	```bash
+	pip install -r ssh-brute-lab/requirements.txt
+	```
 
-## 🗂️ Folder Structure
+3. Run environment preflight checks:
 
+	```bash
+	python labctl.py doctor
+	```
+
+4. Deploy full lab:
+
+	```bash
+	python labctl.py setup
+	```
+
+	Setup automatically writes an HTML report to `reports/`. To open it (lightweight "GUI" view):
+
+	```bash
+	python labctl.py setup --open
+	```
+
+5. Verify readiness:
+
+	```bash
+	python labctl.py verify
+	```
+
+6. Clean up when finished:
+
+	```bash
+	python labctl.py cleanup
+	```
+
+	Cleanup automatically writes an HTML report to `reports/`. To open it:
+
+	```bash
+	python labctl.py cleanup --open
+	```
+
+## One-command operations
+
+- `python labctl.py setup` — deploy all lab targets
+- `python labctl.py verify` — run health checks
+- `python labctl.py attack-ssh -- --target target_ssh --username root` — run SSH workflow in Kali
+- `python labctl.py attack-rdp -- --target rdp_target --username admin` — run RDP workflow in Kali
+- `python labctl.py shell` — open an interactive shell in `kali_attacker`
+- `python labctl.py lesson --track ssh` — guided instructor/student flow with prompts + expected outputs
+- `python labctl.py lesson --track ssh --run` — execute each lesson step automatically
+- `python labctl.py cleanup` — tear down lab
+- `python labctl.py harden` — apply remediation/hardening (post-lesson)
+- `python labctl.py gui --up --open` — open a simple GUI to view container logs live
+- `python labctl.py scan --type fs` — supply-chain scan (repo) with Trivy
+- `python labctl.py scan --type images` — supply-chain scan (lab images) with Trivy
+
+## Makefile shortcuts
+
+If you prefer Make targets:
+
+```bash
+make doctor
+make setup
+make verify
+make lesson
+make lesson-run
+make cleanup
+make report
+make setup-report
+make cleanup-report
+make gui-open
+make harden-open
+make scan-fs
 ```
-ssh-rdp-brute-lab/
-├── ansible/
-│   ├── setup-kali.yml
-│   ├── setup-target.yml
-│   ├── setup-metasploit.yml
-│   └── lab-cleanup.yml
-├── scripts/
-│   └── ssh_bruteforce.py
-└── README.md
+
+## Reports (HTML)
+
+- Reports are written to `reports/` (ignored by git).
+- Generate a standalone status report anytime:
+
+	```bash
+	python labctl.py report --open
+	```
+
+## Defensive network audit (optional)
+
+For learners who want to inventory their own home/small-business lab network (authorized use only):
+
+```bash
+python3 labctl.py audit --targets 192.168.1.0/24 --mode discovery --yes --open
 ```
 
----
+See [network-audit/README.md](network-audit/README.md).
 
-## ⚡ Quick Setup
+## Live GUI (optional)
 
-### ✅ 1. Start Docker & Colima
+To let learners see what’s happening (live container logs in a browser):
+
+```bash
+python3 labctl.py gui --up --open
+```
+
+See [defense-stack/README.md](defense-stack/README.md).
+
+## Detection lab (optional)
+
+Capture traffic signals to a target container and generate an HTML report:
+
+```bash
+python3 labctl.py detect --container target_ssh --seconds 90 --open
+```
+
+See [detection-lab/README.md](detection-lab/README.md).
+
+## Remediation (optional)
+
+After completing lessons, apply hardening and re-test:
+
+```bash
+python3 labctl.py harden --open
+python3 labctl.py lesson --track remediate --run
+```
+
+## Supply chain scanning (optional)
+
+```bash
+python3 labctl.py scan --type fs --open
+```
+
+## If `make setup` fails on Docker socket
+
+If you see errors referencing `FileNotFoundError` or `/var/run/docker.sock`, ensure Colima is active and selected:
 
 ```bash
 colima start
 docker context use colima
+python labctl.py doctor
 ```
 
-### 🧪 2. Deploy Lab with Ansible
+Then retry:
 
 ```bash
-cd ansible
-ansible-playbook setup-target.yml
-ansible-playbook setup-kali.yml
-ansible-playbook setup-metasploit.yml
+make setup
 ```
 
----
+## Practice scripts (inside Kali)
 
-## 🔍 Brute-Force Attack Demo
+- SSH flow: `python3 /opt/lab/ssh-bruteforce.py --help`
+- RDP flow: `python3 /opt/lab/rdp-bruteforce.py --help`
+
+## Ethical use
+
+Use this project only in environments you own or are explicitly authorized to test. Do not run these workflows against public or unauthorized systems.
+
+See contribution and policy docs:
+
+- [CONTRIBUTING.md](CONTRIBUTING.md)
+- [SECURITY.md](SECURITY.md)
+
+## Development quality checks
+
+Run locally:
 
 ```bash
-docker cp scripts/ssh_bruteforce.py kali_attacker:/root/
-docker exec -it kali_attacker python3 /root/ssh_bruteforce.py
+pip install -r requirements-dev.txt
+ruff check .
+python -m compileall -q verify-lab.py ssh-brute-lab/ansible/scripts
+ansible-playbook --syntax-check ssh-brute-lab/ansible/lab/lab-setup.yml
 ```
-
-This script:
-
-* Scans `host.docker.internal:2222` for open SSH
-* Attempts login using `rockyou.txt`
-
----
-
-## 💣 Metasploit Exploitation
-
-```bash
-docker exec -it kali_attacker msfconsole
-```
-
-Example exploit:
-
-```bash
-use exploit/unix/ftp/vsftpd_234_backdoor
-set RHOST host.docker.internal
-set RPORT 21
-run
-```
-
----
-
-## ✅ Demo Checklist
-
-* [x] Nmap port scan
-* [x] Hydra brute-force attack
-* [x] Metasploit shell exploit
-* [x] Security hardening recommendations
-
----
-
-## 🛡️ Mitigation Best Practices
-
-* Disable SSH root login
-* Enforce key-based authentication
-* Use tools like `fail2ban`
-* Patch vulnerable services
-* Restrict Docker networking
-
----
-
-## 🧹 Cleanup
-
-```bash
-ansible-playbook ansible/lab-cleanup.yml
-```
-
----
-
-## ⭐ Contribute or Fork
-
-Have ideas to expand the lab? Submit a pull request or fork to add:
-
-* RDP/SMB attacks
-* Web exploits (e.g., bWAPP, DVWA)
-* Defense tools like Suricata or Splunk
 
 

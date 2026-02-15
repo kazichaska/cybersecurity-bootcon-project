@@ -39,8 +39,13 @@
         - bwapp_web
         #- metasploit_target
       register: container_status
+      failed_when: false
 
     - name: Display status
       debug:
-        msg: "Container {{ item.container.Name }} is {{ item.container.State.Status }}"
+        msg: >-
+          Container {{ item.item }} is
+          {{ item.container.State.Status if item.container is defined else 'missing' }}
       loop: "{{ container_status.results }}"
+      loop_control:
+        label: "{{ item.item }}"

@@ -1,0 +1,40 @@
+---
+- name: Harden BootCon lab targets (post-lesson)
+  hosts: localhost
+  connection: local
+  gather_facts: false
+
+  vars:
+    docker_socket: "unix://{{ lookup('env', 'HOME') }}/.colima/default/docker.sock"
+
+  tasks:
+    - name: Harden SSH target (disable root + password auth)
+      community.docker.docker_container_exec:
+        container: target_ssh
+        docker_host: "{{ docker_socket }}"
+        command: |
+          bash -c "set -euo pipefail;
+          sed -i 's/^#\?PermitRootLogin.*/PermitRootLogin no/' /etc/ssh/sshd_config;
+          sed -i 's/^#\?PasswordAuthentication.*/PasswordAuthentication no/' /etc/ssh/sshd_config;
+          service ssh restart || true"
+      environment:
+        DOCKER_HOST: "{{ docker_socket }}"
+      failed_when: false
+
+    - name: Harden RDP target (lock admin user)
+      community.docker.docker_container_exec:
+        container: rdp_target
+        docker_host: "{{ docker_socket }}"
+        command: |
+          bash -c "set -euo pipefail;
+          passwd -l admin || true;
+          service xrdp stop || true"
+      environment:
+        DOCKER_HOST: "{{ docker_socket }}"
+      failed_when: false
+
+    - name: Show hardening summary
+      debug:
+        msg:
+          - "SSH: root login disabled + password auth disabled (target_ssh)"
+          - "RDP: admin user locked + xrdp stopped (rdp_target)"

@@ -71,7 +71,7 @@ colima start --memory 4 --arch x86_64 --network-address
 export DOCKER_HOST=unix://$HOME/.colima/default/docker.sock
 
 # Run lab setup
-cd ssh-rdp-brute-lab/ansible/lab
+cd ssh-brute-lab/ansible/lab
 ansible-playbook lab-setup.yml
 ```
 
@@ -139,7 +139,7 @@ def rdp_attack():
 ## 📊 Project Structure
 ```
 bootcon-project/
-├── ssh-rdp-brute-lab/
+├── ssh-brute-lab/
 │   ├── ansible/
 │   │   ├── lab/
 │   │   │   ├── lab-setup.yml

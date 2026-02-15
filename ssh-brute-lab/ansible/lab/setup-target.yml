@@ -32,3 +32,5 @@
                     service ssh restart &&
                     echo 'root:toor' | chpasswd"
         docker_host: "{{ docker_socket }}"
+      environment:
+        DOCKER_HOST: "{{ docker_socket }}"

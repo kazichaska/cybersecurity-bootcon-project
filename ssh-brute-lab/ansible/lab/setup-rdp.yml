@@ -36,3 +36,6 @@
                    useradd -m admin && \
                    echo 'admin:password123' | chpasswd && \
                    usermod -aG sudo admin"
+        docker_host: "{{ docker_socket }}"
+      environment:
+        DOCKER_HOST: "{{ docker_socket }}"

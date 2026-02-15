@@ -71,6 +71,8 @@
         container: bwapp_mysql
         command: mysql -u root -pbwapp -e "SHOW DATABASES LIKE 'bwapp';"
         docker_host: "{{ docker_socket }}"
+      environment:
+        DOCKER_HOST: "{{ docker_socket }}"
       register: bwapp_db_check
       changed_when: false
       failed_when: false
@@ -81,6 +83,8 @@
         command: >
           bash -c "mysql -h bwapp_mysql -u bwapp -pbwapp bwapp < /tmp/create.sql"
         docker_host: "{{ docker_socket }}"
+      environment:
+        DOCKER_HOST: "{{ docker_socket }}"
       when: "'bwapp' not in bwapp_db_check.stdout"
 
 

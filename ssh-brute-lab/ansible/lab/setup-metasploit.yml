@@ -27,6 +27,8 @@
         container: metasploit_target
         command: bash -c "ps aux"
         docker_host: "{{ docker_socket }}"
+      environment:
+        DOCKER_HOST: "{{ docker_socket }}"
       register: service_status
 
     - name: Show services running inside Metasploitable2
