@@ -5,7 +5,7 @@ services:
     ports:
       - "${DOZZLE_PORT:-9999}:8080"
     volumes:
-      - "/var/run/docker.sock:/var/run/docker.sock:ro"
+      - "${DOCKER_SOCKET_PATH:-/var/run/docker.sock}:/var/run/docker.sock:ro"
     environment:
       DOZZLE_BASE: "/"
     restart: unless-stopped

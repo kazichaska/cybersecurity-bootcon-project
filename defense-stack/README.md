@@ -27,4 +27,5 @@ python3 labctl.py gui --down
 ## Notes
 
 - This stack is for visibility/learning (logs + container activity), not for “guaranteed compromise detection”.
-- This stack connects to Docker via `/var/run/docker.sock` (daemon-side), which works with Colima/Docker Desktop.
+- Default socket: `/var/run/docker.sock`.
+- Override if needed: set `DOCKER_SOCKET_PATH` (the compose file maps it into `/var/run/docker.sock`).

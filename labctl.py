@@ -310,7 +310,10 @@ def write_reports_index() -> None:
         return
 
 
-def build_env_sections() -> list[tuple[str, str]]:
+def build_env_sections(*, dry_run: bool) -> list[tuple[str, str]]:
+    if dry_run:
+        return [("Dry run", "No subprocesses executed. Remove --dry-run to capture live status.")]
+
     sections: list[tuple[str, str]] = []
 
     if shutil.which("colima"):
@@ -345,6 +348,7 @@ def docker_compose_base() -> list[str]:
 
 def gui_stack(up: bool, down: bool, open_browser: bool, dry_run: bool) -> int:
     env = os.environ.copy()
+    env.setdefault("DOCKER_SOCKET_PATH", "/var/run/docker.sock")
     env.setdefault("DOZZLE_PORT", "9999")
 
     compose = docker_compose_base()
@@ -655,7 +659,7 @@ def network_audit(
         ("Runner", tool),
     ]
     if not dry_run:
-        sections.extend(build_env_sections())
+        sections.extend(build_env_sections(dry_run=False))
 
     report_path = generate_html_report(
         title=title,
@@ -681,7 +685,7 @@ def setup_with_report(dry_run: bool, open_browser: bool) -> int:
         output_path=log_path,
         dry_run=dry_run,
     )
-    sections = build_env_sections()
+    sections = build_env_sections(dry_run=dry_run)
     if not dry_run:
         sections.append(("Lab verify", capture_text([sys.executable, str(VERIFY_SCRIPT)], cwd=ROOT)))
     report_path = generate_html_report(
@@ -706,7 +710,7 @@ def cleanup_with_report(dry_run: bool, open_browser: bool) -> int:
         output_path=log_path,
         dry_run=dry_run,
     )
-    sections = build_env_sections()
+    sections = build_env_sections(dry_run=dry_run)
     report_path = generate_html_report(
         title="Lab Cleanup Report",
         command_line=f"ansible-playbook {LAB_CLEANUP_PLAYBOOK}",
@@ -1005,10 +1009,8 @@ def main() -> int:
         if args.command == "lesson":
             return run_lesson(args.track, args.run, args.non_interactive, args.dry_run)
         if args.command == "report":
-            if args.dry_run:
-                sections = [("Dry run", "No commands executed. Remove --dry-run to capture live status.")]
-            else:
-                sections = build_env_sections()
+            sections = build_env_sections(dry_run=args.dry_run)
+            if not args.dry_run:
                 sections.append(("Lab verify", capture_text([sys.executable, str(VERIFY_SCRIPT)], cwd=ROOT)))
             report_path = generate_html_report(
                 title="Lab Status Report",
