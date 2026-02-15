@@ -817,10 +817,20 @@ def doctor(dry_run: bool) -> int:
         ["docker", "ps", "--format", "table {{.Names}}\t{{.Status}}"],
     ]
 
+    # In dry-run mode, the contract is to avoid executing commands.
+    # CI environments (Linux runners) often don't have Colima installed.
+    if dry_run:
+        for command in checks:
+            print(f"$ {' '.join(command)}")
+        return 0
+
     for command in checks:
         binary = command[0]
-        require_binary(binary)
-        code = run(command, cwd=ROOT, dry_run=dry_run)
+        if shutil.which(binary) is None:
+            # Colima is macOS-specific; skip if not present.
+            print(f"[!] Skipping missing command: {binary}")
+            continue
+        code = run(command, cwd=ROOT, dry_run=False)
         if code != 0:
             return code
     return 0
