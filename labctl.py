@@ -841,7 +841,16 @@ def parse_args() -> argparse.Namespace:
     parser.add_argument("--dry-run", action="store_true", help="Print commands without executing")
 
     common = argparse.ArgumentParser(add_help=False)
-    common.add_argument("--dry-run", action="store_true", help=argparse.SUPPRESS)
+    # IMPORTANT: many subcommands inherit this via `parents=[common]`.
+    # If we set a default here, it can override the top-level --dry-run when
+    # users call `labctl.py --dry-run <subcommand>`.
+    # Suppressing the default prevents accidental reset to False.
+    common.add_argument(
+        "--dry-run",
+        action="store_true",
+        default=argparse.SUPPRESS,
+        help=argparse.SUPPRESS,
+    )
 
     subparsers = parser.add_subparsers(dest="command", required=True)
 
