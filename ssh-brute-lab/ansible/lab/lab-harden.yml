@@ -3,10 +3,8 @@
   hosts: localhost
   connection: local
   gather_facts: false
-
   vars:
     docker_socket: "unix://{{ lookup('env', 'HOME') }}/.colima/default/docker.sock"
-
   tasks:
     - name: Harden SSH target (disable root + password auth)
       community.docker.docker_container_exec:
@@ -20,7 +18,6 @@
       environment:
         DOCKER_HOST: "{{ docker_socket }}"
       failed_when: false
-
     - name: Harden RDP target (lock admin user)
       community.docker.docker_container_exec:
         container: rdp_target
@@ -32,9 +29,8 @@
       environment:
         DOCKER_HOST: "{{ docker_socket }}"
       failed_when: false
-
     - name: Show hardening summary
-      debug:
+      ansible.builtin.debug:
         msg:
           - "SSH: root login disabled + password auth disabled (target_ssh)"
           - "RDP: admin user locked + xrdp stopped (rdp_target)"
