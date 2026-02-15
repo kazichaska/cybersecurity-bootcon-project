@@ -17,7 +17,7 @@
         name: rdp_target
         image: ubuntu:20.04
         state: started
-        recreate: yes
+        recreate: true
         published_ports:
           - "3389:3389"
         networks:
@@ -36,3 +36,6 @@
                    useradd -m admin && \
                    echo 'admin:password123' | chpasswd && \
                    usermod -aG sudo admin"
+        docker_host: "{{ docker_socket }}"
+      environment:
+        DOCKER_HOST: "{{ docker_socket }}"

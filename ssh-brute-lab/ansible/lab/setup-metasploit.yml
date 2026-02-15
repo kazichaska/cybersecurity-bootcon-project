@@ -5,14 +5,14 @@
 
   vars:
     docker_socket: "unix://{{ lookup('env', 'HOME') }}/.colima/default/docker.sock"
-  
+
   tasks:
     - name: Start Metasploitable2 container
       community.docker.docker_container:
         name: metasploit_target
         image: tleemcjr/metasploitable2
         state: started
-        recreate: yes
+        recreate: true
         published_ports:
           - "8180:80"
           - "2223:22"
@@ -27,8 +27,9 @@
         container: metasploit_target
         command: bash -c "ps aux"
         docker_host: "{{ docker_socket }}"
+      environment:
+        DOCKER_HOST: "{{ docker_socket }}"
       register: service_status
-
     - name: Show services running inside Metasploitable2
-      debug:
+      ansible.builtin.debug:
         var: service_status.stdout_lines

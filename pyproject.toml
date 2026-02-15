@@ -1,0 +1,20 @@
+[tool.ruff]
+line-length = 100
+target-version = "py311"
+extend-exclude = [
+  ".git",
+  ".venv",
+  "node_modules",
+  "ssh-brute-lab/old-scripts",
+  "ssh-brute-lab/ansible/scripts/*old*.py",
+  "ssh-brute-lab/ansible/scripts/verify_container.py",
+]
+
+[tool.ruff.lint]
+select = ["E", "F", "I", "UP"]
+ignore = ["E501"]
+
+[tool.ruff.format]
+quote-style = "double"
+indent-style = "space"
+line-ending = "lf"

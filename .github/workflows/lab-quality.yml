@@ -1,0 +1,49 @@
+name: Lab Quality
+
+on:
+  push:
+    branches: ["**"]
+  pull_request:
+
+jobs:
+  python-and-ansible-quality:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+
+      - name: Install dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install -r requirements-dev.txt
+          pip install -r ssh-brute-lab/requirements.txt
+
+      - name: Install Ansible collections
+        run: |
+          ansible-galaxy collection install -r ssh-brute-lab/ansible/requirements.yml
+
+      - name: Ruff lint
+        run: |
+          ruff check .
+
+      - name: Python syntax check
+        run: |
+          python -m compileall -q verify-lab.py ssh-brute-lab/ansible/scripts labctl.py
+
+      - name: Lesson mode sanity check
+        run: |
+          python labctl.py --dry-run lesson --track ssh --run --non-interactive
+
+      - name: Ansible syntax check
+        run: |
+          ansible-playbook --syntax-check ssh-brute-lab/ansible/lab/lab-setup.yml
+          ansible-playbook --syntax-check ssh-brute-lab/ansible/lab/lab-cleanup.yml
+
+      - name: Ansible lint
+        run: |
+          ansible-lint ssh-brute-lab/ansible/lab/lab-setup.yml ssh-brute-lab/ansible/lab/lab-cleanup.yml

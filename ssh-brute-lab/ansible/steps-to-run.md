@@ -1,7 +1,7 @@
 
 1. colima start / status to check 
 2. export DOCKER_HOST=unix://$HOME/.colima/default/docker.sock
-3. being on kaziislam@mac bootcon-project % ansible-playbook ssh-rdp-brute-lab/ansible/lab/lab-setup.yml 
+3. being on kaziislam@mac bootcon-project % ansible-playbook ssh-brute-lab/ansible/lab/lab-setup.yml 
 
 `docker network inspect pentest-net` - will show IPs for each container
 

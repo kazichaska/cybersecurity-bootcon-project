@@ -2,8 +2,8 @@
 - name: Set up Kali Attacker Container
   hosts: localhost
   connection: local
-  gather_facts: no
-  
+  gather_facts: false
+
   vars:
     docker_socket: "unix://{{ lookup('env', 'HOME') }}/.colima/default/docker.sock"
 
@@ -13,7 +13,7 @@
         name: pentest-net
         state: present
         docker_host: "{{ docker_socket }}"
-    
+
     - name: Pull Kali Linux image
       community.docker.docker_image:
         name: kalilinux/kali-rolling
@@ -25,10 +25,10 @@
         name: kali_attacker
         image: kalilinux/kali-rolling
         state: started
-        recreate: yes
+        recreate: true
         command: /bin/bash
-        tty: yes
-        interactive: yes
+        tty: true
+        interactive: true
         networks:
           - name: pentest-net
         volumes:
@@ -50,14 +50,19 @@
                   netcat-traditional && \
                   gunzip -f /usr/share/wordlists/rockyou.txt.gz && \
                   sed -i '1i toor' /usr/share/wordlists/rockyou.txt"
+        docker_host: "{{ docker_socket }}"
+      environment:
+        DOCKER_HOST: "{{ docker_socket }}"
       register: kali_install_output
-    
+
     - name: Install Python requests module using apt
       community.docker.docker_container_exec:
         container: kali_attacker
         command: apt install -y python3-requests
+        docker_host: "{{ docker_socket }}"
+      environment:
+        DOCKER_HOST: "{{ docker_socket }}"
       register: pip_install_output
-
     - name: Print Kali install output
-      debug:
+      ansible.builtin.debug:
         var: kali_install_output.stdout_lines

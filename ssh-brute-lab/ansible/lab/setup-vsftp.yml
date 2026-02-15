@@ -2,23 +2,19 @@
 - name: Set up FTP Backdoor Lab
   hosts: localhost
   connection: local
-
   vars:
     docker_socket: "unix://{{ lookup('env', 'HOME') }}/.colima/default/docker.sock"
-
   tasks:
     - name: Start vulnerable vsftpd container
       community.docker.docker_container:
         name: vsftpd_target
         image: vsftp_target:latest
         state: started
-        recreate: yes
+        recreate: true
         published_ports:
           - "21:21"
         networks:
           - name: pentest-net
-        networks_cli_compatible: yes
+        networks_cli_compatible: true
         command: sh -c "vsftpd /etc/vsftpd.conf & tail -f /dev/null"
-        recreate: yes
         docker_host: "{{ docker_socket }}"
-
