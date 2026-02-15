@@ -23,9 +23,7 @@ def parse_args() -> argparse.Namespace:
     parser = argparse.ArgumentParser(description="Verify BootCon cyber lab health")
     parser.add_argument(
         "--docker-socket",
-        default="unix://{home}/.colima/default/docker.sock".format(
-            home=os.path.expanduser("~")
-        ),
+        default="unix://{home}/.colima/default/docker.sock".format(home=os.path.expanduser("~")),
         help="Docker socket URL (default: Colima socket)",
     )
     parser.add_argument(
@@ -53,7 +51,9 @@ def main() -> None:
             }
         except Exception as error:
             print(f"💥 Docker SDK error: {error}")
-            print("Tip: If you don't have the docker Python package, install it or use the CLI fallback.")
+            print(
+                "Tip: If you don't have the docker Python package, install it or use the CLI fallback."
+            )
             containers = {}
     else:
         containers = {}

