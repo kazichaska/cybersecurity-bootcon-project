@@ -51,20 +51,52 @@ def main() -> None:
             f"Scanning {args.target}:{args.port} with nmap",
         )
 
-    run_command(
-        [
-            "hydra",
-            "-l",
-            args.username,
-            "-P",
-            args.wordlist,
-            "-s",
-            str(args.port),
-            f"ssh://{args.target}",
-        ],
-        "Launching Hydra brute-force attack",
+    GREEN = "\033[32;1m"
+    RESET = "\033[0m"
+    SUCCESS_MARKER = f"[{args.port}][ssh] host:"
+
+    print("[*] Launching Hydra brute-force attack")
+    hydra_cmd = [
+        "hydra",
+        "-l", args.username,
+        "-P", args.wordlist,
+        "-s", str(args.port),
+        f"ssh://{args.target}",
+    ]
+
+    process = subprocess.Popen(
+        hydra_cmd,
+        stdout=subprocess.PIPE,
+        stderr=subprocess.STDOUT,
+        text=True,
+        bufsize=1,
     )
-    print("[+] Workflow finished")
+
+    found = False
+    assert process.stdout is not None
+    for line in process.stdout:
+        if SUCCESS_MARKER in line:
+            sys.stdout.write(f"{GREEN}{line}{RESET}")
+            found = True
+        elif found and (line.startswith("[ERROR]") or line.startswith("[WARNING]")):
+            # Suppress Hydra cleanup noise after credentials are found
+            continue
+        else:
+            sys.stdout.write(line)
+        sys.stdout.flush()
+
+    rc = process.wait()
+
+    if found:
+        print(f"\n{GREEN}[+] Hydra brute-force attack succeeded — valid credentials found!{RESET}")
+        print("[+] Workflow finished")
+        sys.exit(0)
+    elif rc == 0:
+        print("[+] Workflow finished")
+        sys.exit(0)
+    else:
+        print(f"[-] Launching Hydra brute-force attack failed with exit code {rc}")
+        sys.exit(rc)
 
 
 if __name__ == "__main__":
