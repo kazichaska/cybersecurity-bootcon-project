@@ -683,7 +683,7 @@ def harden_with_report(dry_run: bool, open_browser: bool) -> int:
         output_path=log_path,
         dry_run=dry_run,
     )
-    sections = build_env_sections() if not dry_run else [("Dry run", "No commands executed")]
+    sections = build_env_sections(dry_run=dry_run)
     report_path = generate_html_report(
         title="Lab Hardening Report",
         command_line=f"ansible-playbook {LAB_HARDEN_PLAYBOOK}",
@@ -873,7 +873,7 @@ def detect_capture_and_analyze(
         ("Capture file", str(pcap_path)),
         ("Analysis exit code", str(analysis_rc)),
     ]
-    sections.extend(build_env_sections())
+    sections.extend(build_env_sections(dry_run=dry_run))
 
     report_path = generate_html_report(
         title="Detection Lab Report (Traffic Signals)",
@@ -979,7 +979,7 @@ def run_ctf(track: str, setup: bool, check: str | None, dry_run: bool) -> int:
     flag_locations: dict[str, tuple[str, str]] = {
         "ssh": ("/root/flag.txt", "chmod 600 /root/flag.txt"),
         "rdp": ("/root/flag.txt", "chmod 600 /root/flag.txt"),
-        "web": ("/var/www/html/bWAPP/flag.txt", "chmod 644 /var/www/html/bWAPP/flag.txt"),
+        "web": ("/app/flag.txt", "chmod 644 /app/flag.txt"),
     }
     flag_path, flag_chmod = flag_locations[track]
 
@@ -1003,7 +1003,7 @@ def run_ctf(track: str, setup: bool, check: str | None, dry_run: bool) -> int:
     hints: dict[str, str] = {
         "ssh": "Brute-force into target_ssh as root, then: cat /root/flag.txt",
         "rdp": "Brute-force into rdp_target as admin, then access /root/flag.txt via the shell",
-        "web": "Exploit bwapp_web to read the flag from /var/www/html/bWAPP/flag.txt (try command injection or fetch http://bwapp_web/bWAPP/flag.txt)",
+        "web": "Exploit bwapp_web to read the flag from /app/flag.txt (try command injection or fetch http://bwapp_web/flag.txt)",
     }
     attack_cmds: dict[str, str] = {
         "ssh": "python labctl.py attack-ssh -- --target target_ssh --username root",

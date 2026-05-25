@@ -1,0 +1,26 @@
+BootCon E2E Regression Summary
+Date: 2026-05-25
+Environment: macOS + Colima + Docker
+Branch: main
+
+Implemented fixes validated in this cycle:
+- detect report crash fixed by passing dry_run into build_env_sections
+- Kali package installation stabilized by pinning a consistent mirror and retry/index cleanup logic
+- Kali wordlist prep now ensures demo passwords (toor, password123)
+- SSH target setup now explicitly enables PasswordAuthentication pre-hardening
+
+Workflow result matrix:
+- Setup: PASS
+- Verify: PASS
+- Attack SSH (pre-hardening): PASS
+- Attack RDP: PASS
+- Attack Web: PASS
+- Detect target_ssh: PASS
+- Harden: PASS
+- Attack SSH after harden (expected fail): PASS (failed as expected)
+- Cleanup: PASS
+- Verify after cleanup (expected fail): PASS (failed as expected)
+
+Notes:
+- One earlier detect run failed due missing dry_run argument; fixed and revalidated.
+- Cleanup leaves bwapp_web running by current design; attacker/targets are removed.
