@@ -34,7 +34,7 @@ XSS occurs when an application takes untrusted input (from a URL parameter, form
 
 ### Lab example (bWAPP Reflected XSS)
 
-The bWAPP `xss_get.php` page reflects the `name` parameter directly into the HTML response without encoding. Payload: `<script>alert('XSS')</script>` appears verbatim in the response.
+The bWAPP `xss_get.php` page reflects the `firstname` and `lastname` parameters directly into the HTML response without encoding. Payload: `<script>alert('XSS')</script>` appears verbatim in the response.
 
 ### Defenses
 
@@ -96,7 +96,7 @@ bWAPP has multiple SQLi labs. The login form is vulnerable with security level s
 # Web attack lesson (XSS via bWAPP)
 python labctl.py lesson --track web --run
 
-# Run bWAPP attack script from Kali
+# Run bWAPP attack script (targets http://localhost:8080/bWAPP/ on the host)
 python labctl.py attack-web
 
 # Quiz on web concepts

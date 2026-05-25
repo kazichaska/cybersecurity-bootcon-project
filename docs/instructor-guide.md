@@ -195,12 +195,12 @@ python labctl.py setup
 
 ### Students can't reach bwapp_web
 
-bWAPP runs on port 8080 **inside the Docker network**. Students access it from inside the Kali container:
+bWAPP runs on port 80 **inside the Docker network** (Docker maps host port 8080 to container port 80). Students access it from inside the Kali container:
 
 ```bash
 python labctl.py shell
 # Inside Kali:
-curl http://bwapp_web:8080/bWAPP/
+curl http://bwapp_web/bWAPP/
 ```
 
 If accessing from the host machine, the container maps to `http://localhost:8080`.

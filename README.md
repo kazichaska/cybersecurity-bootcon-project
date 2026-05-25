@@ -1,10 +1,10 @@
 
 # BootCon Cybersecurity Lab (2026 Branch)
 
-[![CI](https://github.com/YOUR-ORG/bootcon-project/actions/workflows/lab-quality.yml/badge.svg)](https://github.com/YOUR-ORG/bootcon-project/actions/workflows/lab-quality.yml)
+[![CI](https://github.com/kazichaska/cybersecurity-bootcon-project/actions/workflows/lab-quality.yml/badge.svg)](https://github.com/kazichaska/cybersecurity-bootcon-project/actions/workflows/lab-quality.yml)
 [![Python 3.11+](https://img.shields.io/badge/python-3.11%2B-blue.svg)](https://www.python.org/)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](LICENSE)
-[![Open in Dev Container](https://img.shields.io/static/v1?label=Dev%20Container&message=Open&color=blue&logo=visualstudiocode)](https://vscode.dev/redirect?url=vscode://ms-vscode-remote.remote-containers/cloneInVolume?url=https://github.com/YOUR-ORG/bootcon-project)
+[![Open in Dev Container](https://img.shields.io/static/v1?label=Dev%20Container&message=Open&color=blue&logo=visualstudiocode)](https://vscode.dev/redirect?url=vscode://ms-vscode-remote.remote-containers/cloneInVolume?url=https://github.com/kazichaska/cybersecurity-bootcon-project)
 
 Hands-on, containerized cybersecurity lab for learning and practicing offensive + defensive workflows in a controlled environment.
 
@@ -30,7 +30,7 @@ Hands-on, containerized cybersecurity lab for learning and practicing offensive 
 graph TD
     K[kali_attacker<br/>Kali Linux] -->|port 22 SSH| T[target_ssh<br/>Ubuntu]
     K -->|port 3389 RDP| R[rdp_target<br/>Ubuntu + xrdp]
-    K -->|port 8080 HTTP| B[bwapp_web<br/>bWAPP]
+    K -->|port 80 HTTP| B[bwapp_web<br/>bWAPP]
     S[sensor sidecar<br/>tcpdump] -.->|network namespace| T
     D[Dozzle GUI<br/>:9999] -.->|Docker socket| K
     D -.->|Docker socket| T

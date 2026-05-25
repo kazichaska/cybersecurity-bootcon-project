@@ -971,6 +971,13 @@ def run_ctf(track: str, setup: bool, check: str | None, dry_run: bool) -> int:
     container_map = {"ssh": "target_ssh", "rdp": "rdp_target", "web": "bwapp_web"}
     container = container_map[track]
 
+    flag_locations: dict[str, tuple[str, str]] = {
+        "ssh": ("/root/flag.txt", "chmod 600 /root/flag.txt"),
+        "rdp": ("/root/flag.txt", "chmod 600 /root/flag.txt"),
+        "web": ("/var/www/html/bWAPP/flag.txt", "chmod 644 /var/www/html/bWAPP/flag.txt"),
+    }
+    flag_path, flag_chmod = flag_locations[track]
+
     if setup:
         require_binary("docker")
         cmd = [
@@ -979,19 +986,19 @@ def run_ctf(track: str, setup: bool, check: str | None, dry_run: bool) -> int:
             container,
             "bash",
             "-c",
-            f"echo '{flag}' > /root/flag.txt && chmod 600 /root/flag.txt",
+            f"echo '{flag}' > {flag_path} && {flag_chmod}",
         ]
         code = run(cmd, cwd=ROOT, dry_run=dry_run)
         if code != 0:
             return code
         print()
-        print(f"[+] CTF flag planted in '{container}' at /root/flag.txt")
+        print(f"[+] CTF flag planted in '{container}' at {flag_path}")
         print()
 
     hints: dict[str, str] = {
         "ssh": "Brute-force into target_ssh as root, then: cat /root/flag.txt",
         "rdp": "Brute-force into rdp_target as admin, then access /root/flag.txt via the shell",
-        "web": "Exploit bwapp_web to read the flag from /root/flag.txt (try command injection or file read)",
+        "web": "Exploit bwapp_web to read the flag from /var/www/html/bWAPP/flag.txt (try command injection or fetch http://bwapp_web/bWAPP/flag.txt)",
     }
     attack_cmds: dict[str, str] = {
         "ssh": "python labctl.py attack-ssh -- --target target_ssh --username root",
@@ -1001,7 +1008,7 @@ def run_ctf(track: str, setup: bool, check: str | None, dry_run: bool) -> int:
 
     print(f"\n=== CTF Mode: {track.upper()} ===")
     print(f"  Target container : {container}")
-    print("  Flag location    : /root/flag.txt")
+    print(f"  Flag location    : {flag_path}")
     print()
     print(f"  Objective        : {hints[track]}")
     print(f"  Attack command   : {attack_cmds[track]}")
@@ -1093,7 +1100,7 @@ def run_quiz(track: str, non_interactive: bool, dry_run: bool) -> int:
         ],
     )
     print(f"[+] Quiz report: {report_path}")
-    return 0
+    return 0 if pct >= 80 else 1
 
 
 def open_report(report_path: Path) -> None:

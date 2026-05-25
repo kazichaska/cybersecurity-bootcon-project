@@ -2,7 +2,7 @@
 
 import requests
 
-BASE_URL = "http://localhost:8080"
+BASE_URL = "http://localhost:8080/bWAPP"
 BWAPP_URL = f"{BASE_URL}/portal.php"
 LOGIN_URL = f"{BASE_URL}/login.php"
 XSS_URL = f"{BASE_URL}/xss_get.php"

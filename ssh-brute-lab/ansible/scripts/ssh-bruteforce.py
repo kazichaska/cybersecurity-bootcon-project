@@ -40,16 +40,6 @@ def run_command(command: list[str], step_name: str) -> None:
         sys.exit(result.returncode)
 
 
-def run_hydra(command: list[str], step_name: str, output: list[str]) -> int:
-    """Run Hydra and capture output. Returns 0 if any credentials were found."""
-    print(f"[*] {step_name}")
-    result = subprocess.run(command, check=False, capture_output=False, text=False)
-    output.append(str(result.returncode))
-    # Hydra exit codes: 0 = found, 1 = not found, 255 = partial errors but may still have found creds
-    # We check stdout for the success marker instead of relying solely on exit code
-    return result.returncode
-
-
 def main() -> None:
     args = parse_args()
     require_tool("hydra")

@@ -35,7 +35,7 @@
       environment:
         DOCKER_HOST: "{{ docker_socket }}"
 
-    - name: Plant CTF flag (used by ctf --track ssh --setup)
+    - name: Plant CTF flag for SSH track (always planted during lab setup)
       community.docker.docker_container_exec:
         container: target_ssh
         command: |
