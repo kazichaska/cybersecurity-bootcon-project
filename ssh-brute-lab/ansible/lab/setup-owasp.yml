@@ -10,10 +10,10 @@
         name: juice_shop
         image: bkimminich/juice-shop
         state: started
-        recreate: yes
+        recreate: true
         published_ports:
           - "3000:3000" # Map host port 3000 to container port 3000
         networks:
           - name: pentest-net # Or whatever network your Kali container is on
-        networks_cli_compatible: yes
+        networks_cli_compatible: true
         docker_host: "{{ docker_socket }}"

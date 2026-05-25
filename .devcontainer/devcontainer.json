@@ -1,0 +1,40 @@
+{
+  "name": "BootCon Cybersecurity Lab",
+  "image": "mcr.microsoft.com/devcontainers/python:3.11-bullseye",
+  "features": {
+    "ghcr.io/devcontainers/features/docker-in-docker:2": {
+      "version": "latest",
+      "enableNonRootDocker": "true"
+    },
+    "ghcr.io/devcontainers/features/ansible:1": {}
+  },
+  "onCreateCommand": "pip install -r requirements-dev.txt && pip install -r ssh-brute-lab/requirements.txt && ansible-galaxy collection install -r ssh-brute-lab/ansible/requirements.yml",
+  "postCreateCommand": "python labctl.py doctor || true",
+  "customizations": {
+    "vscode": {
+      "extensions": [
+        "ms-python.python",
+        "ms-python.vscode-pylance",
+        "charliermarsh.ruff",
+        "redhat.ansible",
+        "yzhang.markdown-all-in-one",
+        "bierner.markdown-mermaid"
+      ],
+      "settings": {
+        "python.defaultInterpreterPath": "/usr/local/bin/python",
+        "editor.formatOnSave": true,
+        "[python]": {
+          "editor.defaultFormatter": "charliermarsh.ruff"
+        }
+      }
+    }
+  },
+  "forwardPorts": [8080, 9999, 2222, 3389],
+  "portsAttributes": {
+    "8080": { "label": "bWAPP Web Target", "onAutoForward": "notify" },
+    "9999": { "label": "Dozzle Log Viewer", "onAutoForward": "notify" },
+    "2222": { "label": "SSH Target", "onAutoForward": "silent" },
+    "3389": { "label": "RDP Target", "onAutoForward": "silent" }
+  },
+  "remoteUser": "vscode"
+}

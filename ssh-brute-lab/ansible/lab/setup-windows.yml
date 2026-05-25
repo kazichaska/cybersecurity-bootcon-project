@@ -15,9 +15,9 @@
     - name: Start Windows Server Core container
       community.docker.docker_container:
         name: windows_target
-        image: docker pull mcr.microsoft.com/windows/servercore:ltsc2019-amd64
+        image: mcr.microsoft.com/windows/servercore:ltsc2019-amd64
         state: started
-        recreate: yes
+        recreate: true
         platform: windows/amd64
         published_ports:
           - "3389:3389"

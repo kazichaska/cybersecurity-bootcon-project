@@ -25,7 +25,7 @@
   connection: local
   vars:
     docker_socket: "unix://{{ lookup('env', 'HOME') }}/.colima/default/docker.sock"
-  
+
   tasks:
     - name: Check container status
       community.docker.docker_container_info:
@@ -35,14 +35,14 @@
         - kali_attacker
         - target_ssh
         - rdp_target
-        #- juice_shop
+        # - juice_shop
         - bwapp_web
-        #- metasploit_target
+        # - metasploit_target
       register: container_status
       failed_when: false
 
     - name: Display status
-      debug:
+      ansible.builtin.debug:
         msg: >-
           Container {{ item.item }} is
           {{ item.container.State.Status if item.container is defined else 'missing' }}

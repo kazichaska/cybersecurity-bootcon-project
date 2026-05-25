@@ -1,3 +1,4 @@
+---
 - name: Set up Ubuntu SSH Target
   hosts: localhost
   connection: local
@@ -11,16 +12,15 @@
         name: target_ssh
         image: ubuntu
         state: started
-        recreate: yes
+        recreate: true
         command: /bin/bash
-        tty: yes
-        interactive: yes
+        tty: true
+        interactive: true
         published_ports:
           - "2222:22"
         networks:
           - name: pentest-net
         docker_host: "{{ docker_socket }}"
-        
 
     - name: Install and configure SSH in container
       community.docker.docker_container_exec:
@@ -31,6 +31,17 @@
                     sed -i 's/PermitRootLogin no/PermitRootLogin yes/g' /etc/ssh/sshd_config &&
                     service ssh restart &&
                     echo 'root:toor' | chpasswd"
+        docker_host: "{{ docker_socket }}"
+      environment:
+        DOCKER_HOST: "{{ docker_socket }}"
+
+    - name: Plant CTF flag for SSH track (always planted during lab setup)
+      community.docker.docker_container_exec:
+        container: target_ssh
+        command: |
+          bash -c "mkdir -p /root &&
+                    echo 'CTF{brute_force_is_easy_when_passwords_are_weak}' > /root/flag.txt &&
+                    chmod 600 /root/flag.txt"
         docker_host: "{{ docker_socket }}"
       environment:
         DOCKER_HOST: "{{ docker_socket }}"

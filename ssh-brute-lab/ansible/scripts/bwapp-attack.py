@@ -2,9 +2,10 @@
 
 import requests
 
-BWAPP_URL = "http://localhost:8080/bWAPP/portal.php"
-LOGIN_URL = "http://localhost:8080/bWAPP/login.php"
-XSS_URL = "http://localhost:8080/bWAPP/xss_get.php"
+BASE_URL = "http://localhost:8080/bWAPP"
+BWAPP_URL = f"{BASE_URL}/portal.php"
+LOGIN_URL = f"{BASE_URL}/login.php"
+XSS_URL = f"{BASE_URL}/xss_get.php"
 
 s = requests.Session()
 
@@ -12,7 +13,7 @@ s = requests.Session()
 print("[*] Logging into bWAPP...")
 login_data = {"login": "bee", "password": "bug", "form": "submit"}
 resp = s.post(LOGIN_URL, data=login_data)
-if "Welcome" not in resp.text:
+if "Logout" not in resp.text and "Portal" not in resp.text and not resp.url.endswith("portal.php"):
     print("[-] Login failed")
     exit()
 
