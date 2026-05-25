@@ -575,7 +575,8 @@ def write_reports_index() -> None:
             reverse=True,
         )
         items = "\n".join(
-            f"<li><a href='{html.escape(p.name)}'>{html.escape(p.name)}</a></li>" for p in report_files
+            f"<li><a href='{html.escape(p.name)}'>{html.escape(p.name)}</a></li>"
+            for p in report_files
         )
         index_html = "\n".join(
             [
@@ -612,7 +613,9 @@ def build_env_sections(*, dry_run: bool) -> list[tuple[str, str]]:
         sections.append(
             (
                 "Docker ps",
-                capture_text(["docker", "ps", "--format", "table {{.Names}}\t{{.Status}}"], cwd=ROOT),
+                capture_text(
+                    ["docker", "ps", "--format", "table {{.Names}}\t{{.Status}}"], cwd=ROOT
+                ),
             )
         )
     return sections
@@ -648,7 +651,9 @@ def gui_stack(up: bool, down: bool, open_browser: bool, dry_run: bool) -> int:
         print(f"$ {printable}")
         if dry_run:
             return 0
-        return subprocess.run([*compose, "-f", compose_file, "down"], cwd=str(ROOT), env=env).returncode
+        return subprocess.run(
+            [*compose, "-f", compose_file, "down"], cwd=str(ROOT), env=env
+        ).returncode
 
     if up:
         printable = " ".join([*compose, "-f", compose_file, "up", "-d"])
@@ -1201,7 +1206,9 @@ def setup_with_report(dry_run: bool, open_browser: bool) -> int:
     )
     sections = build_env_sections(dry_run=dry_run)
     if not dry_run:
-        sections.append(("Lab verify", capture_text([sys.executable, str(VERIFY_SCRIPT)], cwd=ROOT)))
+        sections.append(
+            ("Lab verify", capture_text([sys.executable, str(VERIFY_SCRIPT)], cwd=ROOT))
+        )
     report_path = generate_html_report(
         title="Lab Setup Report",
         command_line=f"ansible-playbook {LAB_SETUP_PLAYBOOK}",
@@ -1325,7 +1332,9 @@ def run_lesson(track: str, run_steps: bool, non_interactive: bool, dry_run: bool
         print(f"Expected output: {expected}")
 
         if isinstance(action, str):
-            print(f"Command: {action_preview(action, step_args if isinstance(step_args, list) else [])}")
+            print(
+                f"Command: {action_preview(action, step_args if isinstance(step_args, list) else [])}"
+            )
             if run_steps:
                 code = run_action(
                     action,
@@ -1670,7 +1679,9 @@ def main() -> int:
         if args.command == "report":
             sections = build_env_sections(dry_run=args.dry_run)
             if not args.dry_run:
-                sections.append(("Lab verify", capture_text([sys.executable, str(VERIFY_SCRIPT)], cwd=ROOT)))
+                sections.append(
+                    ("Lab verify", capture_text([sys.executable, str(VERIFY_SCRIPT)], cwd=ROOT))
+                )
             report_path = generate_html_report(
                 title="Lab Status Report",
                 command_line="python labctl.py report",
@@ -1691,7 +1702,11 @@ def main() -> int:
                 dry_run=args.dry_run,
             )
         if args.command == "gui":
-            if not (getattr(args, "up", False) or getattr(args, "down", False) or getattr(args, "open", False)):
+            if not (
+                getattr(args, "up", False)
+                or getattr(args, "down", False)
+                or getattr(args, "open", False)
+            ):
                 raise LabCtlError("Use --up, --down, and/or --open")
             return gui_stack(
                 up=getattr(args, "up", False),

