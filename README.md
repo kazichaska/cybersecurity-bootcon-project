@@ -21,7 +21,7 @@ Hands-on, containerized cybersecurity lab for learning and practicing offensive 
 |---|---|---|---|
 | SSH brute-force + hardening | Beginner | 25 min | [T1110.001](https://attack.mitre.org/techniques/T1110/001/) |
 | RDP brute-force + account lockout | Beginner | 20 min | [T1021.001](https://attack.mitre.org/techniques/T1021/001/) |
-| Web attacks: XSS + SQLi via bWAPP | Beginner | 30 min | [T1059.007](https://attack.mitre.org/techniques/T1059/007/) |
+| Web attacks: reflected XSS via bWAPP | Beginner | 30 min | [T1059.007](https://attack.mitre.org/techniques/T1059/007/) |
 | Exploit → harden → re-test (remediation) | Intermediate | 35 min | T1110 + M1036 |
 
 ## Lab topology
