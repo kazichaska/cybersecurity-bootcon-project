@@ -1,10 +1,11 @@
 PYTHON ?= $(shell if [ -x .venv/bin/python ]; then echo .venv/bin/python; else echo python3; fi)
 
-.PHONY: setup verify cleanup doctor attack-ssh attack-rdp shell lesson lesson-run lesson-rdp quality
+.PHONY: setup verify cleanup doctor attack-ssh attack-rdp shell lesson lesson-run lesson-rdp lesson-web quality
 .PHONY: audit-discovery audit-services
 .PHONY: gui-up gui-down gui-open harden harden-open scan-fs scan-images
 .PHONY: detect-ssh detect-bwapp detect-rdp
 .PHONY: report setup-report cleanup-report
+.PHONY: ctf-ssh ctf-rdp ctf-web quiz-ssh quiz-rdp quiz-web quiz-remediate
 
 setup:
 	$(PYTHON) labctl.py setup
@@ -82,6 +83,30 @@ lesson-run:
 
 lesson-rdp:
 	$(PYTHON) labctl.py lesson --track rdp
+
+lesson-web:
+	$(PYTHON) labctl.py lesson --track web --run
+
+ctf-ssh:
+	$(PYTHON) labctl.py ctf --track ssh --setup
+
+ctf-rdp:
+	$(PYTHON) labctl.py ctf --track rdp --setup
+
+ctf-web:
+	$(PYTHON) labctl.py ctf --track web --setup
+
+quiz-ssh:
+	$(PYTHON) labctl.py quiz --track ssh --non-interactive
+
+quiz-rdp:
+	$(PYTHON) labctl.py quiz --track rdp --non-interactive
+
+quiz-web:
+	$(PYTHON) labctl.py quiz --track web --non-interactive
+
+quiz-remediate:
+	$(PYTHON) labctl.py quiz --track remediate --non-interactive
 
 quality:
 	$(PYTHON) -m compileall -q verify-lab.py ssh-brute-lab/ansible/scripts labctl.py

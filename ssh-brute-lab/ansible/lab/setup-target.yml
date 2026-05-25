@@ -34,3 +34,14 @@
         docker_host: "{{ docker_socket }}"
       environment:
         DOCKER_HOST: "{{ docker_socket }}"
+
+    - name: Plant CTF flag (used by ctf --track ssh --setup)
+      community.docker.docker_container_exec:
+        container: target_ssh
+        command: |
+          bash -c "mkdir -p /root &&
+                    echo 'CTF{brute_force_is_easy_when_passwords_are_weak}' > /root/flag.txt &&
+                    chmod 600 /root/flag.txt"
+        docker_host: "{{ docker_socket }}"
+      environment:
+        DOCKER_HOST: "{{ docker_socket }}"
