@@ -96,7 +96,8 @@ bWAPP has multiple SQLi labs. The login form is vulnerable with security level s
 # Web attack lesson (XSS via bWAPP)
 python labctl.py lesson --track web --run
 
-# Run bWAPP attack script (targets http://localhost:8080/bWAPP/ on the host)
+# Run the bWAPP attack script from the host; it targets
+# http://localhost:8080/bWAPP/ on the host, not from inside Kali.
 python labctl.py attack-web
 
 # Quiz on web concepts
