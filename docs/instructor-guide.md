@@ -200,7 +200,7 @@ bWAPP runs on port 80 **inside the Docker network** (Docker maps host port 8080 
 ```bash
 python labctl.py shell
 # Inside Kali:
-curl http://bwapp_web/bWAPP/
+curl http://bwapp_web:80/bWAPP/
 ```
 
 If accessing from the host machine, the container maps to `http://localhost:8080`.
