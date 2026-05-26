@@ -117,7 +117,7 @@ LESSON_TRACKS: dict[str, list[dict[str, object]]] = {
         },
         {
             "title": "Login to bWAPP and set security level",
-            "prompt": "Access bWAPP at http://bwapp_web:80/bWAPP/login.php with credentials bee/bug. Set security level to Low.",
+            "prompt": "Access bWAPP at http://localhost:8080/login.php with credentials bee/bug. Set security level to Low.",
             "expected": "Successful login; portal page loads.",
         },
         {
