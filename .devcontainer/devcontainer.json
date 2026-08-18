@@ -29,12 +29,14 @@
       }
     }
   },
-  "forwardPorts": [8080, 9999, 2222, 3389],
+  "forwardPorts": [8080, 9999, 2222, 3389, 8700, 11435],
   "portsAttributes": {
     "8080": { "label": "bWAPP Web Target", "onAutoForward": "notify" },
     "9999": { "label": "Dozzle Log Viewer", "onAutoForward": "notify" },
     "2222": { "label": "SSH Target", "onAutoForward": "silent" },
-    "3389": { "label": "RDP Target", "onAutoForward": "silent" }
+    "3389": { "label": "RDP Target", "onAutoForward": "silent" },
+    "8700": { "label": "AI Lab Assistant", "onAutoForward": "notify" },
+    "11435": { "label": "Ollama (AI Assistant backend)", "onAutoForward": "silent" }
   },
   "remoteUser": "vscode"
 }

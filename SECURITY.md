@@ -20,3 +20,11 @@ Include:
 - Only test systems you own or have explicit written authorization to assess.
 - Never target public infrastructure or third-party systems without permission.
 - Follow institutional and legal policies for offensive security exercises.
+
+## AI Lab Assistant data handling
+
+The optional AI assistant (`ai-assistant/`, `python labctl.py ai --up`) is local-only by default:
+
+- It runs on a local Ollama container. No lab data, chat messages, container logs, or lesson content leave your machine.
+- Its "Log Analyst" mode mounts the Docker socket and uses the Docker API to read logs for a container you explicitly select in a chat request — it does not proactively scan anything. Note: access to the Docker socket is highly privileged (often equivalent to root on the Docker host), so treat this stack as trusted and avoid running it on hosts with sensitive workloads.
+- If you opt in to `AI_PROVIDER=openai` (see `ai-assistant/README.md`), chat messages and any injected context (command reference, lesson docs, or container log excerpts) are sent to OpenAI's API under your own API key. Don't enable this in an environment where log/lesson content is sensitive.

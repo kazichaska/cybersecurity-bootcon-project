@@ -18,6 +18,7 @@ LAB_HARDEN_PLAYBOOK = LAB_DIR / "ansible" / "lab" / "lab-harden.yml"
 VERIFY_SCRIPT = ROOT / "verify-lab.py"
 REPORTS_DIR = ROOT / "reports"
 DEFENSE_STACK_COMPOSE = ROOT / "defense-stack" / "docker-compose.yml"
+AI_STACK_COMPOSE = ROOT / "ai-assistant" / "docker-compose.yml"
 BWAPP_ATTACK_SCRIPT = ROOT / "ssh-brute-lab" / "ansible" / "scripts" / "bwapp-attack.py"
 
 
@@ -670,6 +671,43 @@ def gui_stack(up: bool, down: bool, open_browser: bool, dry_run: bool) -> int:
 
     if open_browser and not dry_run:
         port = env.get("DOZZLE_PORT", "9999")
+        webbrowser.open(f"http://localhost:{port}")
+    return 0
+
+
+def ai_stack(up: bool, down: bool, open_browser: bool, dry_run: bool) -> int:
+    env = os.environ.copy()
+    env.setdefault("DOCKER_SOCKET_PATH", "/var/run/docker.sock")
+    env.setdefault("AI_BACKEND_PORT", "8700")
+
+    compose = docker_compose_base()
+    compose_file = str(AI_STACK_COMPOSE)
+
+    if down:
+        printable = " ".join([*compose, "-f", compose_file, "down"])
+        print(f"$ {printable}")
+        if dry_run:
+            return 0
+        return subprocess.run(
+            [*compose, "-f", compose_file, "down"], cwd=str(ROOT), env=env
+        ).returncode
+
+    if up:
+        printable = " ".join([*compose, "-f", compose_file, "up", "-d", "--build"])
+        print(f"$ {printable}")
+        print("First run pulls the local model and may take a few minutes.")
+        if dry_run:
+            return 0
+        code = subprocess.run(
+            [*compose, "-f", compose_file, "up", "-d", "--build"],
+            cwd=str(ROOT),
+            env=env,
+        ).returncode
+        if code != 0:
+            return code
+
+    if open_browser and not dry_run:
+        port = env.get("AI_BACKEND_PORT", "8700")
         webbrowser.open(f"http://localhost:{port}")
     return 0
 
@@ -1557,6 +1595,17 @@ def parse_args() -> argparse.Namespace:
     gui_parser.add_argument("--down", action="store_true", help="Stop the GUI stack")
     gui_parser.add_argument("--open", action="store_true", help="Open the GUI in a browser")
 
+    ai_parser = subparsers.add_parser(
+        "ai",
+        parents=[common],
+        help="Optional AI lab assistant (chat UI backed by a local Ollama container)",
+    )
+    ai_parser.add_argument("--up", action="store_true", help="Start the AI assistant stack")
+    ai_parser.add_argument("--down", action="store_true", help="Stop the AI assistant stack")
+    ai_parser.add_argument(
+        "--open", action="store_true", help="Open the AI assistant chat UI in a browser"
+    )
+
     harden_parser = subparsers.add_parser(
         "harden",
         parents=[common],
@@ -1709,6 +1758,19 @@ def main() -> int:
             ):
                 raise LabCtlError("Use --up, --down, and/or --open")
             return gui_stack(
+                up=getattr(args, "up", False),
+                down=getattr(args, "down", False),
+                open_browser=getattr(args, "open", False),
+                dry_run=args.dry_run,
+            )
+        if args.command == "ai":
+            if not (
+                getattr(args, "up", False)
+                or getattr(args, "down", False)
+                or getattr(args, "open", False)
+            ):
+                raise LabCtlError("Use --up, --down, and/or --open")
+            return ai_stack(
                 up=getattr(args, "up", False),
                 down=getattr(args, "down", False),
                 open_browser=getattr(args, "open", False),

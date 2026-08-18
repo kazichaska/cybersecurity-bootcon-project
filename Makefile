@@ -2,7 +2,7 @@ PYTHON ?= $(shell if [ -x .venv/bin/python ]; then echo .venv/bin/python; else e
 
 .PHONY: setup verify cleanup doctor attack-ssh attack-rdp shell lesson lesson-run lesson-rdp lesson-web quality
 .PHONY: audit-discovery audit-services
-.PHONY: gui-up gui-down gui-open harden harden-open scan-fs scan-images
+.PHONY: gui-up gui-down gui-open ai-up ai-down ai-open harden harden-open scan-fs scan-images
 .PHONY: detect-ssh detect-bwapp detect-rdp
 .PHONY: report setup-report cleanup-report
 .PHONY: ctf-ssh ctf-rdp ctf-web quiz-ssh quiz-rdp quiz-web quiz-remediate
@@ -44,6 +44,15 @@ gui-open:
 
 gui-down:
 	$(PYTHON) labctl.py gui --down
+
+ai-up:
+	$(PYTHON) labctl.py ai --up
+
+ai-open:
+	$(PYTHON) labctl.py ai --up --open
+
+ai-down:
+	$(PYTHON) labctl.py ai --down
 
 harden:
 	$(PYTHON) labctl.py harden

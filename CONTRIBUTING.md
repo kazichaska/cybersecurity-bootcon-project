@@ -22,9 +22,10 @@ Run before opening a PR:
 
 ```bash
 ruff check .
-python -m compileall -q verify-lab.py ssh-brute-lab/ansible/scripts labctl.py
+python -m compileall -q verify-lab.py ssh-brute-lab/ansible/scripts labctl.py ai-assistant/backend
 ansible-playbook --syntax-check ssh-brute-lab/ansible/lab/lab-setup.yml
 ansible-playbook --syntax-check ssh-brute-lab/ansible/lab/lab-cleanup.yml
+docker compose -f ai-assistant/docker-compose.yml config --quiet
 ```
 
 ## Contribution scope

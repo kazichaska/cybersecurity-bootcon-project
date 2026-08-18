@@ -33,7 +33,11 @@ jobs:
 
       - name: Python syntax check
         run: |
-          python -m compileall -q verify-lab.py ssh-brute-lab/ansible/scripts labctl.py
+          python -m compileall -q verify-lab.py ssh-brute-lab/ansible/scripts labctl.py ai-assistant/backend
+
+      - name: AI assistant compose config check
+        run: |
+          docker compose -f ai-assistant/docker-compose.yml config --quiet
 
       - name: Lesson mode sanity check
         run: |

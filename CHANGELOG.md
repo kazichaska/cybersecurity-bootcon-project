@@ -9,6 +9,7 @@ Format follows [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 ## [Unreleased]
 
 ### Added
+- **AI Lab Assistant** (`ai --up --open`): optional chat UI backed by a local Ollama container (`qwen2.5:0.5b` by default, host port 11435) or OpenAI (via `AI_PROVIDER=openai` config, no code change). Four modes: freeform Q&A, CLI copilot for `labctl.py` commands, log analyst for running containers, and lesson tutor grounded in `docs/concepts/`. Default model/port chosen to avoid colliding with an existing local Ollama and to stay stable in a default 4GB Colima VM shared with the rest of the lab (larger models observed intermittently crashing the model runner under memory pressure from `bwapp_web`) — see `ai-assistant/README.md` (Troubleshooting section) for sizing up if you give Colima more RAM.
 - **Web attack lesson track** (`lesson --track web`): guided XSS and SQL injection lesson via bWAPP, including Nmap recon, bWAPP login, reflected XSS exploit, and debrief. MITRE ATT&CK T1059.007.
 - **CTF mode** (`ctf --track <ssh|rdp|web>`): plants a flag in a target container and guides learners through an exploit-to-capture exercise. `--setup` plants the flag; `--check <FLAG>` validates it.
 - **Knowledge quizzes** (`quiz --track <track>`): 5 multiple-choice questions per lesson track (ssh, rdp, web, remediate) with scored HTML report output.
