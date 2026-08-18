@@ -43,10 +43,24 @@ def chat():
     body = request.get_json(silent=True) or {}
     mode = body.get("mode", "freeform")
     message = (body.get("message") or "").strip()
-    history = body.get("history") or []
+
+    raw_history = body.get("history") or []
+    if not isinstance(raw_history, list):
+        return jsonify({"error": "history must be a list"}), 400
+
+    # Keep the request bounded (prevents unbounded prompt growth / large payloads).
+    raw_history = raw_history[-40:]
+    history: list[dict[str, str]] = []
+    for item in raw_history:
+        if not isinstance(item, dict):
+            continue
+        role = item.get("role")
+        content = item.get("content")
+        if role in ("user", "assistant") and isinstance(content, str):
+            history.append({"role": role, "content": content})
+
     container = body.get("container")
     track = body.get("track")
-
     if mode not in MODES:
         return jsonify({"error": f"Unknown mode: {mode!r}"}), 400
     if not message:
