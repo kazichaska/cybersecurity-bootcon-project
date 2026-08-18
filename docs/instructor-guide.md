@@ -37,6 +37,16 @@ python labctl.py gui --up --open
 
 Leave this running on your projector browser tab throughout the session.
 
+### 4. Optional: start the AI Lab Assistant
+
+A local chat assistant students can use for follow-up questions without interrupting the lecture: freeform Q&A, a CLI copilot for `labctl.py` commands, a log analyst for reading a container's logs, and a lesson tutor grounded in `docs/concepts/`. Runs entirely on a local model by default — no API key, no data leaves the machine.
+
+```bash
+python labctl.py ai --up --open
+```
+
+First start takes a few minutes (pulls the local model). See [`ai-assistant/README.md`](../ai-assistant/README.md) for modes, troubleshooting, and how to switch to OpenAI later.
+
 ---
 
 ## Running a lesson (guided mode)

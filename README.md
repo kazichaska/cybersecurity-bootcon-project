@@ -109,6 +109,7 @@ graph TD
 - `python labctl.py cleanup` — tear down lab
 - `python labctl.py harden` — apply remediation/hardening (post-lesson)
 - `python labctl.py gui --up --open` — open a simple GUI to view container logs live
+- `python labctl.py ai --up --open` — open the AI lab assistant (chat UI, local by default)
 - `python labctl.py scan --type fs` — supply-chain scan (repo) with Trivy
 - `python labctl.py scan --type images` — supply-chain scan (lab images) with Trivy
 
@@ -153,6 +154,7 @@ make report
 make setup-report
 make cleanup-report
 make gui-open
+make ai-open
 make harden-open
 make scan-fs
 make ctf-ssh
@@ -187,6 +189,20 @@ python3 labctl.py gui --up --open
 ```
 
 See [defense-stack/README.md](defense-stack/README.md).
+
+## AI Lab Assistant (optional)
+
+A chat assistant for the lab — freeform Q&A, a CLI copilot for `labctl.py` commands, a log analyst for running containers, and a lesson tutor grounded in [`docs/concepts/`](docs/concepts/). Runs on a local Ollama container by default (no API key, no external calls); swappable to OpenAI later via config only.
+
+```bash
+python3 labctl.py ai --up --open
+```
+
+Then open:
+
+- http://localhost:8700
+
+See [ai-assistant/README.md](ai-assistant/README.md).
 
 ## Detection lab (optional)
 

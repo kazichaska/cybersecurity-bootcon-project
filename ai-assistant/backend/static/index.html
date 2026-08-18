@@ -1,0 +1,42 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>BootCon Lab Assistant</title>
+  <link rel="stylesheet" href="chat.css" />
+</head>
+<body>
+  <header>
+    <h1>BootCon Lab Assistant</h1>
+    <span id="status" class="status">checking backend…</span>
+  </header>
+
+  <nav id="modes">
+    <button data-mode="freeform" class="active">Freeform</button>
+    <button data-mode="copilot">CLI Copilot</button>
+    <button data-mode="log_analyst">Log Analyst</button>
+    <button data-mode="tutor">Lesson Tutor</button>
+  </nav>
+
+  <div id="context-controls" class="context-controls hidden">
+    <label id="container-field" class="hidden">
+      Container
+      <select id="container-select"></select>
+    </label>
+    <label id="track-field" class="hidden">
+      Track
+      <select id="track-select"></select>
+    </label>
+  </div>
+
+  <main id="transcript"></main>
+
+  <form id="chat-form">
+    <input id="message" type="text" autocomplete="off" placeholder="Ask the lab assistant…" />
+    <button type="submit">Send</button>
+  </form>
+
+  <script src="chat.js"></script>
+</body>
+</html>

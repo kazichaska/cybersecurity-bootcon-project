@@ -1,0 +1,53 @@
+services:
+  ollama:
+    image: ollama/ollama:latest
+    container_name: bootcon-ollama
+    ports:
+      # Host port defaults to 11435, not Ollama's standard 11434, since
+      # that's commonly already taken by another local Ollama install.
+      - "${OLLAMA_PORT:-11435}:11434"
+    volumes:
+      - ollama-models:/root/.ollama
+    healthcheck:
+      test: ["CMD", "ollama", "list"]
+      interval: 5s
+      timeout: 5s
+      retries: 20
+    restart: unless-stopped
+
+  ollama-pull:
+    image: ollama/ollama:latest
+    container_name: bootcon-ollama-pull
+    depends_on:
+      ollama:
+        condition: service_healthy
+    environment:
+      OLLAMA_HOST: "ollama:11434"
+    entrypoint: ["ollama", "pull", "${OLLAMA_MODEL:-qwen2.5:0.5b}"]
+    restart: "no"
+
+  ai-backend:
+    build: ./backend
+    container_name: bootcon-ai-backend
+    depends_on:
+      ollama:
+        condition: service_healthy
+      ollama-pull:
+        condition: service_completed_successfully
+    ports:
+      - "${AI_BACKEND_PORT:-8700}:8700"
+    environment:
+      AI_PROVIDER: "${AI_PROVIDER:-ollama}"
+      OLLAMA_BASE_URL: "http://ollama:11434"
+      OLLAMA_MODEL: "${OLLAMA_MODEL:-qwen2.5:0.5b}"
+      OPENAI_API_KEY: "${OPENAI_API_KEY:-}"
+      OPENAI_MODEL: "${OPENAI_MODEL:-gpt-4o-mini}"
+      DOCKER_SOCKET_PATH: "${DOCKER_SOCKET_PATH:-/var/run/docker.sock}"
+    volumes:
+      - ../docs:/app/context/docs:ro
+      - ../README.md:/app/context/README.md:ro
+      - "${DOCKER_SOCKET_PATH:-/var/run/docker.sock}:/var/run/docker.sock:ro"
+    restart: unless-stopped
+
+volumes:
+  ollama-models:
