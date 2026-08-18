@@ -6,6 +6,7 @@ services:
       # Host port defaults to 11435, not Ollama's standard 11434, since
       # that's commonly already taken by another local Ollama install.
       - "127.0.0.1:${OLLAMA_PORT:-11435}:11434"
+    volumes:
       - ollama-models:/root/.ollama
     healthcheck:
       test: ["CMD", "ollama", "list"]
