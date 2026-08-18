@@ -97,7 +97,8 @@ formEl.addEventListener("submit", async (e) => {
   messageEl.disabled = true;
   formEl.querySelector("button").disabled = true;
 
-  const body = { mode, message, history };
+  const MAX_HISTORY_ITEMS = 40; // 20 back-and-forth turns
+  const body = { mode, message, history: history.slice(-MAX_HISTORY_ITEMS) };
   if (mode === "log_analyst") body.container = containerSelect.value;
   if (mode === "tutor") body.track = trackSelect.value;
 
@@ -114,7 +115,13 @@ formEl.addEventListener("submit", async (e) => {
       appendBubble("assistant", data.reply);
       history.push({ role: "user", content: message });
       history.push({ role: "assistant", content: data.reply });
+      if (history.length > MAX_HISTORY_ITEMS) {
+        history.splice(0, history.length - MAX_HISTORY_ITEMS);
+      }
     }
+  } catch (err) {
+    appendBubble("error", `Request failed: ${err}`);
+  }
   } catch (err) {
     appendBubble("error", `Request failed: ${err}`);
   } finally {
