@@ -1,6 +1,6 @@
 services:
   ollama:
-    image: ollama/ollama:latest
+    image: ollama/ollama:0.32.14
     container_name: bootcon-ollama
     ports:
       # Host port defaults to 11435, not Ollama's standard 11434, since
@@ -15,7 +15,7 @@ services:
     restart: unless-stopped
 
   ollama-pull:
-    image: ollama/ollama:latest
+    image: ollama/ollama:0.32.14
     container_name: bootcon-ollama-pull
     depends_on:
       ollama:
